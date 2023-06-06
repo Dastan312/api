@@ -1,31 +1,79 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
+import uvicorn
 from pydantic import BaseModel
-from typing import Union
+from joblib import load
+import pickle
+from typing import List
 
 
-
+# ['Bedrooms', 'Living_area', 'Postcode', 'Number_of_floors','Primary_energy_consumption', 'Construction_year']
 app = FastAPI()
 
-class SalaryCalc(BaseModel):
-    salary: Union[float, int]
-    bonus: Union[float, int]
-    taxes: Union[float, int]
+@app.get('/')
+def index():
+    return {'message': 'Hello, World'}
 
-@app.post("/api/calc")
-def calc(input_data: SalaryCalc):
-    try:
-        result = input_data.salary + input_data.bonus - input_data.taxes
-        return {"result": result}
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Expected numbers, got strings.")
-    except TypeError:
-        missing_fields = [field for field, value in input_data.dict().items() if value is None]
-        if missing_fields:
-            missed_field = ', '.join(missing_fields)
-            error = f"3 fields expected (salary, bonus, taxes). You forgot: {missed_field}."
-            raise HTTPException(status_code=400, detail=error)
-        else:
-            raise HTTPException(status_code=400, detail="An error occurred.")
+class DataPoint(BaseModel):
+
+    Bedrooms: int 
+    Living_area: float
+    Postcode: int
+    Number_of_floors: int
+    Primary_eergy_consumption: float
+    Construction_year: int
+
+
+@app.post("/predict")
+def predict(data: List[float]):
+    prediction = predict(data)
+    return {"prediction": prediction}
 
 
 
+pickle_in = open("classifier.pkl","rb")
+classifier=pickle.load(pickle_in)
+
+
+@app.get('/')
+def index():
+    return {'message': 'Hello, World'}
+
+
+@app.post('/predict')
+def predict_banknote(data:BankNote):
+    data = data.dict()
+    Bedrooms=data['Bedrooms']
+    Living_area=data['Living_area']
+    Number_of_floors=data['Number_of_floors']
+    Construction_year=data['Construction_year']
+
+
+
+
+    prediction = classifier.predict([['Bedrooms', 'Living_area', 'Postcode', 'Number_of_floors','Primary_energy_consumption', 'Construction_year']])
+    if(prediction[0]>0.5):
+        prediction="BAD"
+    else:
+        prediction="GOOD"
+    return {
+        'prediction': prediction
+    }
+
+# 5. Run the API with uvicorn
+#    Will run on http://127.0.0.1:8000
+if __name__ == '__main__':
+    uvicorn.run(app, host='127.0.0.1', port=8000)
+
+
+#http://127.0.0.1:8000
+
+
+
+#http://127.0.0.1:8000/docs
+
+
+if __name__ == '__main__':
+    uvicorn.run(app, host='127.0.0.1', port=8000)
+#uvicorn main:app --reload
+
+   
