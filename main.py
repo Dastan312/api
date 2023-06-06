@@ -30,8 +30,8 @@ def predict(data: List[float]):
 
 
 
-pickle_in = open("classifier.pkl","rb")
-classifier=pickle.load(pickle_in)
+pickle_in = open("regXGBoost.pkl","rb")
+reg=pickle.load(pickle_in)
 
 
 @app.get('/')
@@ -40,7 +40,7 @@ def index():
 
 
 @app.post('/predict')
-def predict_banknote(data:BankNote):
+def Price(data:DataPoint):
     data = data.dict()
     Bedrooms=data['Bedrooms']
     Living_area=data['Living_area']
@@ -50,22 +50,18 @@ def predict_banknote(data:BankNote):
 
 
 
-    prediction = classifier.predict([['Bedrooms', 'Living_area', 'Postcode', 'Number_of_floors','Primary_energy_consumption', 'Construction_year']])
-    if(prediction[0]>0.5):
-        prediction="BAD"
-    else:
-        prediction="GOOD"
-    return {
-        'prediction': prediction
-    }
+    # prediction = reg.predict([['Bedrooms', 'Living_area', 'Postcode', 'Number_of_floors','Primary_energy_consumption', 'Construction_year']])
+    # if(prediction[0]>0.5):
+    #     prediction="BAD"
+    # else:
+    #     prediction="GOOD"
+    # return {
+    #     'prediction': prediction
+    # }
 
 # 5. Run the API with uvicorn
 #    Will run on http://127.0.0.1:8000
-if __name__ == '__main__':
-    uvicorn.run(app, host='127.0.0.1', port=8000)
 
-
-#http://127.0.0.1:8000
 
 
 
@@ -74,6 +70,8 @@ if __name__ == '__main__':
 
 if __name__ == '__main__':
     uvicorn.run(app, host='127.0.0.1', port=8000)
+
+
 #uvicorn main:app --reload
 
    
