@@ -1,6 +1,0 @@
-Dockerfile
-README.md
-.DS_store
-venv
-apivenv/
-*__pycache__*
