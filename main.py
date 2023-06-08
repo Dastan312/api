@@ -1,3 +1,4 @@
+import fastapi
 from fastapi import FastAPI
 import numpy as np
 import json
@@ -26,7 +27,7 @@ reg.load_model("xgb_properties")
 
 @app.get('/')
 def index():
-    return {'message': 'Hello, World'}
+    return {'Connection': 'Connected, Brada'}
 
 
 @app.post('/predict')
